@@ -1,0 +1,201 @@
+﻿<!--
+ * Copyright (C) 2009, Henon<meinrad.recheis@gmail.com>
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or
+ * without modification, are permitted provided that the following
+ * conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above
+ *   copyright notice, this list of conditions and the following
+ *   disclaimer in the documentation and/or other materials provided
+ *   with the distribution.
+ *
+ * - Neither the name of the TicGit project nor the
+ *   names of its contributors may be used to endorse or promote
+ *   products derived from this software without specific prior
+ *   written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ -->
+
+<Window x:Class="TicGit.Net.FrontEnd.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:TicGit.Net.FrontEnd"
+    Title="TicGit.Net ... featuring GitSharp" Height="600" Width="800">
+    <Window.Resources>
+        <local:CommentCountConverter x:Key="CommentCountConverter"/>
+    </Window.Resources>
+    <DockPanel>
+        <DockPanel.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" Opacity="0.6">
+                <GradientStop Color="BlanchedAlmond" Offset="0.0" />
+                <!--<GradientStop Color="Orange" Offset="0.5" />-->
+                <GradientStop Color="Orchid" Offset="1.0" />
+            </LinearGradientBrush>
+        </DockPanel.Background>
+        <!--menu bar-->
+        <Border DockPanel.Dock="Top" BorderThickness="0,0,0,2" BorderBrush="Silver">
+            <DockPanel>
+                <!--<TextBlock Margin="20,5,20,0" FontSize="14" FontFamily="Courier New" FontWeight="Bold" DockPanel.Dock="Right">TicGit</TextBlock>-->
+                <Label Margin="5,0" DockPanel.Dock="Right">
+                    <Hyperlink Click="OnShowCopyright">Copyright</Hyperlink>
+                </Label>
+                <Label VerticalContentAlignment="Bottom" Padding="5">
+                    <Hyperlink Click="OnOpenRepository">Open Repository</Hyperlink>
+                </Label>
+            </DockPanel>
+        </Border>
+        <!--status bar-->
+        <DockPanel Height="16" DockPanel.Dock="Bottom"  Background="Silver">
+            <TextBlock Margin="20,0,2,0">repository:</TextBlock>
+            <TextBlock Name="m_repo"></TextBlock>
+            <TextBlock Margin="20,0,2,0">total tickets:</TextBlock>
+            <TextBlock Name="m_tic_total"></TextBlock>
+            <TextBlock Margin="20,0, 2,0">user.name:</TextBlock>
+            <TextBlock Name="m_username"></TextBlock>
+            <TextBlock Margin="20,0,2,0">user.email:</TextBlock>
+            <TextBlock Name="m_email"></TextBlock>
+        </DockPanel>
+        <!--main body-->
+        <Grid DockPanel.Dock="Top" Background="#AAFFFFFF">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="4"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <!--list-->
+            <DockPanel Grid.Column="0">
+                <Border BorderThickness="0,0,0,4" BorderBrush="Orchid" DockPanel.Dock="Top" >
+                    <DockPanel LastChildFill="False" HorizontalAlignment="Stretch">
+                        <TextBlock VerticalAlignment="Center" Padding="5" FontSize="14" FontWeight="bold">Tickets</TextBlock>
+                        <TextBlock Name="m_ticno" VerticalAlignment="Center" Padding="0" FontSize="14">(15)</TextBlock>
+                        <DockPanel VerticalAlignment="Center">
+                            <CheckBox Margin="10,0,2,0" IsChecked="True" Name="m_open" Click="OnReload">open</CheckBox>
+                            <CheckBox Margin="2,0" Name="m_resolved" Click="OnReload">resolved</CheckBox>
+                            <CheckBox Margin="2,0" Name="m_invalid" Click="OnReload">invalid</CheckBox>
+                            <CheckBox Margin="2,0" Name="m_hold" Click="OnReload">hold</CheckBox>
+                        </DockPanel>
+                        <Button DockPanel.Dock="Right" Click="OnNewTicket" Margin="5" Padding="5,0">New Ticket</Button>
+                    </DockPanel>
+                </Border>
+                <Border Height="0" Padding="15,0" DockPanel.Dock="Top">
+                    <Border Name="hmm"/>
+                </Border>
+                <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+                    <ListBox Name="m_list" Background="Transparent" BorderBrush="Transparent">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <!--Width="{Binding ElementName=scrolli, Path=ViewportWidth}" Margin="0,0,15,0"-->
+                                <DockPanel Width="{Binding ElementName=hmm, Path=ActualWidth}">
+                                    <Label Content="{Binding Path=Title}" DockPanel.Dock="Left" VerticalAlignment="Top" VerticalContentAlignment="Top"/>
+                                    <Label DockPanel.Dock="Left" Content="{Binding Converter={StaticResource CommentCountConverter}}" ToolTip="Comments"/>
+                                    <ListBox  DockPanel.Dock="Right" ItemsSource="{Binding Path=Tags}" BorderThickness="0" Background="Transparent" VerticalAlignment="Center">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal"/>
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="White" BorderThickness="1"  BorderBrush="DarkGray" CornerRadius="4" Padding="3,2" Margin="2,0,0,0">
+                                                    <TextBlock Text="{Binding}" Foreground="DarkGray"/>
+                                            </Border>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <Border/>
+                                    <DockPanel.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Delete" Click="OnDeleteTicket" Tag="{Binding}"/>
+                                        </ContextMenu>
+                                    </DockPanel.ContextMenu>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+            </DockPanel>
+            <GridSplitter Grid.Column="1" Background="Silver" Width="4" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns"/>
+            <!--ticket-->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Column="2">
+                <Grid>
+                    
+                    <!--edit-->
+                    <DockPanel LastChildFill="False" Margin="5" Name="m_edit_ticket">
+                        <!--<TextBlock DockPanel.Dock="Top" Margin="10,5" Foreground="Silver"></TextBlock>-->
+                        <!--<TextBlock DockPanel.Dock="Top" Margin="5,5" >Title:</TextBlock>-->
+                        <Border DockPanel.Dock="Top" Margin="20,10,5,5" BorderThickness="0,0,0,4" BorderBrush="Orchid" Padding="5,0">
+                            <TextBlock Name="m_title" FontSize="14" FontWeight="bold"  TextWrapping="WrapWithOverflow"></TextBlock>
+                        </Border>
+                        <!--<TextBlock DockPanel.Dock="Top" Foreground="DarkGray">Comments:</TextBlock>-->
+                        <!--<ScrollViewer>-->
+                        <ListBox DockPanel.Dock="Top" Name="m_comments" VerticalAlignment="Top" Margin="20,5,5,5" BorderThickness="0" SelectionMode="Extended" Background="Transparent">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel>
+                                        <DockPanel DockPanel.Dock="Top" LastChildFill="False"  HorizontalAlignment="Stretch">
+                                            <TextBlock Margin="2,0" Foreground="DarkGray">Comment by</TextBlock>
+                                            <TextBlock Margin ="2,0" Text="{Binding Path=User}" TextTrimming="CharacterEllipsis" Foreground="Orchid"/>
+                                    <TextBlock  Margin ="2,0" Text="{Binding Path=Time}" Foreground="DarkGray" DockPanel.Dock="Right"/>
+                                </DockPanel>
+                                        <TextBlock Text="{Binding Path=Text}" TextWrapping="WrapWithOverflow" Padding="10,5" Width="{Binding ElementName=m_title, Path=ActualWidth}"></TextBlock>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <!--</ScrollViewer>-->
+                        <TextBlock DockPanel.Dock="Top" Margin="5,0">Status:</TextBlock>
+                        <DockPanel DockPanel.Dock="Top"  Margin="20,5,5,5">
+                            <Button DockPanel.Dock="Right" Margin="5,0,0,0" Click="OnMarkResolved"  Padding="5,0">Close Issue</Button>
+
+                            <ComboBox   Name="m_status" DockPanel.Dock="Top" SelectedIndex="0">
+                                <ComboBox.Items>
+                                    <ComboBoxItem>open</ComboBoxItem>
+                                    <ComboBoxItem>resolved</ComboBoxItem>
+                                    <ComboBoxItem>invalid</ComboBoxItem>
+                                    <ComboBoxItem>hold</ComboBoxItem>
+                                </ComboBox.Items>
+                            </ComboBox>
+                        </DockPanel>
+                        <TextBlock DockPanel.Dock="Top"  Margin="5,0">Assigned to:</TextBlock>
+                        <DockPanel DockPanel.Dock="Top"  Margin="20,5,5,5">
+                            <Button DockPanel.Dock="Right" Margin="5,0,0,0" Padding="5,0" Click="AssignToMe">Assign to me</Button>
+                            <TextBox  Name="m_assigned"></TextBox>
+                        </DockPanel>
+                        <TextBlock DockPanel.Dock="Top"  Margin="5,0">Tags (Comma separated):</TextBlock>
+                        <TextBox  Name="m_tags" DockPanel.Dock="Top" Margin="20,5,5,5" TextWrapping="WrapWithOverflow"></TextBox>
+                        <TextBlock DockPanel.Dock="Top" Margin="5,20,5,5">Leave a new comment and save changes:</TextBlock>
+                        <TextBox    Name="m_comment" DockPanel.Dock="Top" Margin="20,5,5,5" Height="100" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow">
+                        </TextBox>
+
+                        <DockPanel Height="25"  DockPanel.Dock="Right" VerticalAlignment="Top">
+                            <Button FontWeight="bold" Margin="5,0" Padding="5,0" Click="OnSave">Save Changes</Button>
+                            <Button Margin="5,0" Padding="5,0" Click="OnCancel">Cancel</Button>
+                        </DockPanel>
+                    </DockPanel>
+                    
+                    <!--new-->
+                    <ContentControl Name="m_new_ticket_container"></ContentControl>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</Window>

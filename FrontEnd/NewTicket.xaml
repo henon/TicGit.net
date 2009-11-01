@@ -1,0 +1,76 @@
+﻿<!--
+ * Copyright (C) 2009, Henon<meinrad.recheis@gmail.com>
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or
+ * without modification, are permitted provided that the following
+ * conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above
+ *   copyright notice, this list of conditions and the following
+ *   disclaimer in the documentation and/or other materials provided
+ *   with the distribution.
+ *
+ * - Neither the name of the TicGit project nor the
+ *   names of its contributors may be used to endorse or promote
+ *   products derived from this software without specific prior
+ *   written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ -->
+
+
+<UserControl x:Class="TicGit.Net.FrontEnd.NewTicket"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    MinHeight="300" MinWidth="200">
+    <!--Title="Create a new Ticket"-->
+
+    <!--new ticket-->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <DockPanel Grid.Column="2" LastChildFill="False" Margin="5">
+            <!--<TextBlock DockPanel.Dock="Top" Background="Orchid" Padding="5,5" Margin="-5, -5,-5,0">New Ticket</TextBlock>-->
+            <TextBlock DockPanel.Dock="Top" FontSize="14">Title</TextBlock>
+            <TextBox    Name="m_title" DockPanel.Dock="Top"  Margin="20,5,5,5"  TextWrapping="WrapWithOverflow"></TextBox>
+            <TextBlock DockPanel.Dock="Top" FontSize="14">Comment</TextBlock>
+            <TextBox    Name="m_comment" DockPanel.Dock="Top"  Margin="20,5,5,5" Height="200" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow">
+            </TextBox>
+            <TextBlock DockPanel.Dock="Top" FontSize="14">Status</TextBlock>
+            <ComboBox   Name="m_status" DockPanel.Dock="Top"  Margin="20,5,5,5" SelectedIndex="0">
+                <ComboBox.Items>
+                    <ComboBoxItem>open</ComboBoxItem>
+                    <ComboBoxItem>resolved</ComboBoxItem>
+                    <ComboBoxItem>invalid</ComboBoxItem>
+                    <ComboBoxItem>hold</ComboBoxItem>
+                </ComboBox.Items>
+            </ComboBox>
+            <TextBlock DockPanel.Dock="Top" FontSize="14">Assigned to</TextBlock>
+            <DockPanel DockPanel.Dock="Top"  Margin="20,5,5,5">
+                <Button DockPanel.Dock="Right" Margin="5,0,0,0" Click="AssignToMe">Assign to me</Button>
+                <TextBox  Name="m_assigned" TextWrapping="WrapWithOverflow"></TextBox>
+            </DockPanel>
+            <TextBlock DockPanel.Dock="Top" FontSize="14">Tags (Comma separated)</TextBlock>
+            <TextBox  Name="m_tags" DockPanel.Dock="Top"  Margin="20,5,5,5" TextWrapping="WrapWithOverflow"></TextBox>
+            <DockPanel Height="25"  DockPanel.Dock="Right" VerticalAlignment="Bottom" Margin="10">
+                <Button FontWeight="bold" Margin="5,0" Padding="5,0" Click="OnSave">Save Ticket</Button>
+                <Button Margin="5,0" Padding="5,0" Click="OnCancel">Cancel</Button>
+            </DockPanel>
+        </DockPanel>
+    </ScrollViewer>
+</UserControl>
